@@ -2,29 +2,29 @@ schemaVersion: 2.2.0
 attributes:
   controller.devfile.io/storage-type: per-workspace
 metadata:
-  name: che-demo-app
+  name: deep-thoughts
 projects:
-- name: che-demo-app
+- name: widget-main
   git:
     checkoutFrom:
       remote: origin
       revision: main
     remotes:
-      origin: https://github.com/eclipse-che-demo-app/che-demo-app.git
-- name: che-demo-app-ui
+      origin: <widget-main-url>
+- name: widget-frontend
   git:
     checkoutFrom:
       remote: origin
       revision: main
     remotes:
-      origin: https://github.com/eclipse-che-demo-app/che-demo-app-ui.git
-- name: che-demo-app-service
+      origin: <widget-frontend-url>
+- name: widget-backend
   git:
     checkoutFrom:
       remote: origin
       revision: main
     remotes:
-      origin: https://github.com/eclipse-che-demo-app/che-demo-app-service.git
+      origin: <widget-backend-url>
 components:
 - name: dev-tools
   container: 
@@ -158,7 +158,7 @@ commands:
     group:
       isDefault: true
       kind: build
-    workingDir: '/projects/che-demo-app-service'
+    workingDir: '/projects/widget-backend'
   id: package
 - exec:
     commandLine: mvn package -Dnative -Dmaven.test.skip -Dquarkus.native.native-image-xmx=2G
@@ -166,7 +166,7 @@ commands:
     group:
       kind: build
     label: Package Native
-    workingDir: '/projects/che-demo-app-service'
+    workingDir: '/projects/widget-backend'
   id: package-native
 - exec:
     commandLine: 'quarkus dev -Dmaven.repo.local=/home/user/.m2/repository -Dquarkus.http.host=0.0.0.0'
@@ -176,7 +176,7 @@ commands:
       isDefault: true
       kind: run
     label: Start Quarkus Development mode (Hot reload)
-    workingDir: '/projects/che-demo-app-service'
+    workingDir: '/projects/widget-backend'
   id: quarkus-dev-mode
 - exec:
     commandLine: 'ng serve --disable-host-check --host 0.0.0.0'
@@ -186,10 +186,10 @@ commands:
       isDefault: true
       kind: run
     label: Start NodeJS Development mode (Hot reload)
-    workingDir: '/projects/che-demo-app-ui'
+    workingDir: '/projects/widget-frontend'
   id: node-dev-mode
 - exec:
-    commandLine: "POD=$(oc get pod --selector controller.devfile.io/devworkspace_name=che-demo-app -o name) ; oc rsh -c node-runner ${POD}"
+    commandLine: "POD=$(oc get pod --selector controller.devfile.io/devworkspace_name=deep-thoughts -o name) ; oc rsh -c node-runner ${POD}"
     component: oc-cli
     group:
       kind: run
@@ -197,7 +197,7 @@ commands:
     workingDir: '/'
   id: demo-app-ui-shell
 - exec:
-    commandLine: "POD=$(oc get pod --selector controller.devfile.io/devworkspace_name=che-demo-app -o name) ; oc rsh -c quarkus-runner ${POD}"
+    commandLine: "POD=$(oc get pod --selector controller.devfile.io/devworkspace_name=deep-thoughts -o name) ; oc rsh -c quarkus-runner ${POD}"
     component: oc-cli
     group:
       kind: run
@@ -205,7 +205,7 @@ commands:
     workingDir: '/'
   id: ubi-shell
 - exec:
-    commandLine: "POD=$(oc get pod --selector controller.devfile.io/devworkspace_name=che-demo-app -o name) ; oc rsh -c postgres ${POD}"
+    commandLine: "POD=$(oc get pod --selector controller.devfile.io/devworkspace_name=deep-thoughts -o name) ; oc rsh -c postgres ${POD}"
     component: oc-cli
     group:
       kind: run
@@ -213,7 +213,7 @@ commands:
     workingDir: '/'
   id: postgres-shell
 - exec:
-    commandLine: "POD=$(oc get pod --selector controller.devfile.io/devworkspace_name=che-demo-app -o name) ; oc rsh -c oc-cli ${POD}"
+    commandLine: "POD=$(oc get pod --selector controller.devfile.io/devworkspace_name=deep-thoughts -o name) ; oc rsh -c oc-cli ${POD}"
     component: oc-cli
     group:
       kind: run
@@ -237,7 +237,7 @@ commands:
     workingDir: '/'
   id: copy-kubeconfig
 - exec:
-    commandLine: "/projects/che-demo-app/setUiEnv.sh -f=/projects/che-demo-app-ui/src/environments/environment.development.ts -s=/projects/che-demo-app-ui/env.dev -c=quarkus-runner -w=che-demo-app -p=8080 -e=https-quarkus -v=backendApiUrl"
+    commandLine: "/projects/widget-main/setUiEnv.sh -f=/projects/widget-frontend/src/environments/environment.development.ts -s=/projects/widget-frontend/env.dev -c=quarkus-runner -w=deep-thoughts -p=8080 -e=https-quarkus -v=backendApiUrl"
     component: oc-cli
     group:
       kind: run
