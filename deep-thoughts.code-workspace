@@ -4,10 +4,10 @@
 			"path": "."
 		},
 		{
-			"path": "../che-demo-app-ui"
+			"path": "../widget-frontend"
 		},
 		{
-			"path": "../che-demo-app-service"
+			"path": "../widget-backend"
 		}
 	],
 	"extensions": {
